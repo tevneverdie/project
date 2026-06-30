@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Design Museum — Site &amp; Gardens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --stone: #e9e4d8;
+    --stone-dark: #cdc4ad;
+    --ink: #211f1c;
+    --charcoal: #2c2a26;
+    --hedge: #37432f;
+    --hedge-light: #56664a;
+    --gold: #ab8a52;
+    --dusk: #29384a;
+    --paper: #f6f3eb;
+    --line: rgba(33,31,28,0.14);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-weight:400;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+  a{ color:inherit; text-decoration:none; }
+  ::selection{ background:var(--gold); color:var(--paper); }
+
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:26px 5vw;
+    mix-blend-mode:difference;
+    color:#f6f3eb;
+    transition:padding .4s ease;
+  }
+  .nav.scrolled{ padding:14px 5vw; }
+  .nav-mark{
+    font-family:'Fraunces', serif;
+    font-size:1.05rem;
+    letter-spacing:.04em;
+    display:flex; align-items:center; gap:10px;
+  }
+  .nav-mark .glyph{
+    width:20px; height:20px;
+    border:1.4px solid currentColor;
+    border-radius:50%;
+    display:block;
+    position:relative;
+  }
+  .nav-mark .glyph::after{
+    content:'';
+    position:absolute; inset:5px;
+    border:1.4px solid currentColor;
+    border-radius:50%;
+  }
+  .nav-links{ display:flex; gap:34px; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; }
+  .nav-links a{ opacity:.82; transition:opacity .25s; position:relative; }
+  .nav-links a:hover{ opacity:1; }
+
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    overflow:hidden;
+    background:var(--charcoal);
+  }
+  .hero-img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    object-position:55% 50%;
+    transform:scale(1.08);
+    filter:brightness(0.62) saturate(1.05);
+    animation:heroIn 2.4s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  @keyframes heroIn{
+    from{ transform:scale(1.18); filter:brightness(.3) saturate(1.05); }
+    to{ transform:scale(1.05); filter:brightness(.62) saturate(1.05); }
+  }
+  .hero-veil{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(20,19,16,.55) 0%, rgba(20,19,16,.05) 32%, rgba(20,19,16,.1) 55%, rgba(15,14,12,.92) 100%);
+  }
+  .hero-content{ position:relative; z-index:2; padding:0 5vw 64px; color:var(--paper); }
+  .hero-eyebrow{
+    font-size:.78rem; letter-spacing:.28em; text-transform:uppercase;
+    opacity:0; animation:fadeUp .9s ease forwards .9s;
+    color:var(--stone-dark);
+    margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(2.6rem, 8vw, 7.4rem);
+    line-height:.92;
+    font-weight:500;
+    opacity:0; animation:fadeUp 1.1s ease forwards 1.05s;
+  }
+  .hero h1 em{ font-style:italic; font-weight:300; color:var(--stone-dark); }
+  .hero-foot{
+    margin-top:34px;
+    display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:24px;
+    border-top:1px solid rgba(246,243,235,.22);
+    padding-top:22px;
+    opacity:0; animation:fadeUp 1s ease forwards 1.3s;
+  }
+  .hero-foot p{
+    max-width:380px; font-size:.95rem; line-height:1.55;
+    color:rgba(246,243,235,.78); font-weight:300;
+  }
+  .hero-coords{ font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; text-align:right; color:rgba(246,243,235,.6); line-height:1.8; }
+
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(22px);} to{opacity:1; transform:translateY(0);} }
+
+  .scroll-cue{
+    position:absolute; bottom:28px; right:5vw; z-index:2;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    color:var(--stone-dark);
+    opacity:0; animation:fadeUp 1s ease forwards 1.6s;
+  }
+  .scroll-cue .line{ width:1px; height:46px; background:rgba(246,243,235,.4); position:relative; overflow:hidden; }
+  .scroll-cue .line::after{
+    content:''; position:absolute; top:-46px; left:0; width:100%; height:46px; background:var(--gold);
+    animation:scrollDrop 2.2s ease-in-out infinite;
+  }
+  @keyframes scrollDrop{ 0%{ top:-46px; } 60%,100%{ top:46px; } }
+  .scroll-cue span{ font-size:.68rem; letter-spacing:.18em; writing-mode:vertical-rl; }
+
+  section{ position:relative; padding:140px 5vw; }
+  .eyebrow{
+    font-size:.75rem; letter-spacing:.26em; text-transform:uppercase; color:var(--gold);
+    display:flex; align-items:center; gap:14px; margin-bottom:22px;
+  }
+  .eyebrow::before{ content:''; width:34px; height:1px; background:var(--gold); }
+  .section-head{ max-width:760px; }
+  .section-head h2{ font-size:clamp(2rem, 4.2vw, 3.4rem); line-height:1.08; }
+  .lede{ max-width:560px; margin-top:22px; font-size:1.05rem; line-height:1.7; color:#54514a; font-weight:300; }
+
+  .intro{ background:var(--paper); }
+  .intro-grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:80px; margin-top:80px; align-items:start; }
+  .intro-stats{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); }
+  .stat{ background:var(--paper); padding:30px 26px; }
+  .stat .num{ font-family:'Fraunces',serif; font-size:2.4rem; font-weight:400; }
+  .stat .lbl{ font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:#7b766a; margin-top:6px; }
+  .intro-copy p{ font-size:1.02rem; line-height:1.85; color:#3c3a35; font-weight:300; margin-bottom:20px; }
+  .intro-copy p:first-child::first-letter{
+    font-family:'Fraunces', serif; font-size:3.6rem; float:left; line-height:.78; padding-right:10px; padding-top:6px; color:var(--gold); font-weight:500;
+  }
+
+  .wings{ background:var(--ink); color:var(--paper); }
+  .wings .eyebrow{ color:var(--gold); }
+  .wings .section-head h2{ color:var(--paper); }
+  .wings .lede{ color:rgba(246,243,235,.62); }
+  .wing-list{ margin-top:90px; display:flex; flex-direction:column; }
+  .wing{
+    display:grid; grid-template-columns:90px 1fr 1.1fr; gap:40px; align-items:center;
+    padding:42px 0; border-top:1px solid rgba(246,243,235,.16);
+    transition:background .4s ease;
+  }
+  .wing:last-child{ border-bottom:1px solid rgba(246,243,235,.16); }
+  .wing:hover{ background:rgba(246,243,235,.035); }
+  .wing-index{ font-family:'Fraunces', serif; font-size:.85rem; color:rgba(246,243,235,.4); }
+  .wing-title h3{ color:var(--paper); font-size:1.7rem; font-weight:400; }
+  .wing-title span{ display:block; margin-top:8px; font-size:.74rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); }
+  .wing-desc{ font-size:.95rem; line-height:1.7; color:rgba(246,243,235,.6); font-weight:300; }
+
+  .gardens{ background:var(--hedge); color:var(--paper); overflow:hidden; }
+  .garden-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; margin-top:70px; }
+  .garden-copy .lede{ color:rgba(246,243,235,.72); }
+  .garden-copy .eyebrow{ color:#dac98e; }
+  .garden-copy h2{ color:var(--paper); }
+  .parterre-list{ margin-top:38px; display:flex; flex-direction:column; gap:18px; }
+  .parterre-list li{ display:flex; gap:16px; font-size:.92rem; line-height:1.6; color:rgba(246,243,235,.8); font-weight:300; }
+  .parterre-list li::before{ content:'✦'; color:var(--gold); font-size:.8rem; flex-shrink:0; margin-top:3px; }
+
+  .knot{ position:relative; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; }
+  .knot svg{ width:100%; height:100%; }
+  .knot-ring{ fill:none; stroke:rgba(246,243,235,.5); stroke-width:.6; }
+  .knot-petal{
+    fill:none; stroke:var(--gold); stroke-width:.7; opacity:0;
+    transform-origin:center;
+    animation:petalDraw 1.8s ease forwards;
+  }
+  @keyframes petalDraw{ from{ opacity:0; transform:scale(.7) rotate(-6deg);} to{ opacity:.9; transform:scale(1) rotate(0deg);} }
+  .knot-center{ fill:var(--gold); }
+  .knot-caption{
+    position:absolute; bottom:-6%; left:50%; transform:translateX(-50%);
+    font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(246,243,235,.55);
+    white-space:nowrap;
+  }
+
+  .visit{ background:var(--dusk); color:var(--paper); }
+  .visit .eyebrow{ color:#9fb3cc; }
+  .visit .section-head h2{ color:var(--paper); }
+  .visit .lede{ color:rgba(246,243,235,.65); }
+  .visit-grid{ margin-top:80px; display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:rgba(246,243,235,.14); border:1px solid rgba(246,243,235,.14); }
+  .visit-card{ background:var(--dusk); padding:38px 28px; min-height:230px; display:flex; flex-direction:column; justify-content:space-between; }
+  .visit-card .vc-top{ font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:rgba(246,243,235,.45); }
+  .visit-card h3{ color:var(--paper); font-size:1.3rem; font-weight:400; margin:18px 0 10px; }
+  .visit-card p{ font-size:.86rem; line-height:1.6; color:rgba(246,243,235,.6); font-weight:300; }
+
+  .closing{ background:var(--charcoal); color:var(--paper); padding:160px 5vw 60px; position:relative; }
+  .closing-title{ font-size:clamp(2.2rem, 6vw, 5rem); line-height:1.02; max-width:900px; color:var(--paper); }
+  .closing-row{
+    margin-top:60px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:30px;
+    border-top:1px solid rgba(246,243,235,.18); padding-top:34px;
+  }
+  .closing-addr{ font-size:.85rem; line-height:1.8; color:rgba(246,243,235,.6); font-weight:300; }
+  .cta-btn{
+    display:inline-flex; align-items:center; gap:12px;
+    border:1px solid rgba(246,243,235,.5); padding:16px 30px;
+    font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;
+    transition:all .35s ease;
+  }
+  .cta-btn:hover{ background:var(--gold); border-color:var(--gold); color:var(--ink); }
+  .foot-meta{ margin-top:90px; display:flex; justify-content:space-between; font-size:.72rem; letter-spacing:.06em; color:rgba(246,243,235,.4); flex-wrap:wrap; gap:10px; }
+
+  .reveal{ opacity:0; transform:translateY(34px); transition:opacity .9s ease, transform .9s cubic-bezier(.22,1,.36,1); }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:900px){
+    .intro-grid, .garden-wrap{ grid-template-columns:1fr; gap:46px; }
+    .wing{ grid-template-columns:50px 1fr; }
+    .wing-desc{ grid-column:2/3; }
+    .visit-grid{ grid-template-columns:1fr 1fr; }
+    .nav-links{ display:none; }
+  }
+  @media (max-width:560px){
+    .visit-grid{ grid-template-columns:1fr; }
+    section{ padding:90px 6vw; }
+    .hero-foot{ flex-direction:column; align-items:flex-start; }
+    .hero-coords{ text-align:left; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav-mark"><span class="glyph"></span> The Design Museum</div>
+    <div class="nav-links">
+      <a href="#intro">About</a>
+      <a href="#wings">Galleries</a>
+      <a href="#gardens">Gardens</a>
+      <a href="#visit">Visit</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <img class="hero-img" src="museum-aerial.jpg" alt="Aerial view of the Design Museum campus, with curved galleries, formal gardens, and a fountain court">
+    <div class="hero-veil"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">A campus for objects, ideas &amp; the people who make them</div>
+      <h1>The Design<br><em>Museum</em></h1>
+      <div class="hero-foot">
+        <p>Two curved wings of gallery space wrap a sequence of clipped gardens, reflecting pools, and a rotunda courtyard — a building made to be walked before it is read.</p>
+        <div class="hero-coords">Plan No. 002 — Civic Quarter<br>Open Daily, 10:00 – 18:00</div>
+      </div>
+    </div>
+    <div class="scroll-cue"><div class="line"></div><span>SCROLL</span></div>
+  </header>
+
+  <section class="intro" id="intro">
+    <div class="section-head reveal">
+      <div class="eyebrow">The Site</div>
+      <h2>One footprint, two characters</h2>
+      <p class="lede">From above, the plan reads like an open hand: a glass-fronted office wing and sunken rotunda to the north, a ribboning exhibition hall and formal parterre garden to the south, joined by a single processional axis toward the fountain court.</p>
+    </div>
+    <div class="intro-grid">
+      <div class="intro-copy reveal">
+        <p>The campus is organized as a walk rather than a floor plan. Visitors arrive along a tree-lined drive, pass a bronze fountain roundabout, and choose between the working wing — offices, a roof terrace, café tables under string light — or the public wing, where the galleries curve like a drawn ribbon around a sequence of internal courts.</p>
+        <p>At the centre, a circular rotunda lets daylight fall straight into the lower gallery, while the southern wing unfurls into an S-shaped enfilade of exhibition rooms, each opening onto clipped hedges and gravel parterres outside. The composition resolves at a long reflecting pool fronting the main entrance, lit from below at dusk.</p>
+      </div>
+      <div class="intro-stats reveal">
+        <div class="stat"><div class="num">2</div><div class="lbl">Principal Wings</div></div>
+        <div class="stat"><div class="num">1</div><div class="lbl">Rotunda Court</div></div>
+        <div class="stat"><div class="num">4</div><div class="lbl">Parterre Gardens</div></div>
+        <div class="stat"><div class="num">38</div><div class="lbl">Parking Bays</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wings" id="wings">
+    <div class="section-head reveal">
+      <div class="eyebrow">The Galleries</div>
+      <h2>A building you walk in a loop</h2>
+      <p class="lede">Each wing has its own rhythm of light, material, and pace — from the glazed working floors at the entrance to the curved exhibition halls that close the visit.</p>
+    </div>
+    <div class="wing-list">
+      <div class="wing reveal">
+        <div class="wing-index">N</div>
+        <div class="wing-title"><h3>The Studio Wing</h3><span>Offices &amp; Terrace</span></div>
+        <div class="wing-desc">A glazed, light-filled block holding studios and café seating, stepped back behind a hedge-lined roof terrace where staff and visiting designers cross paths between meetings.</div>
+      </div>
+      <div class="wing reveal">
+        <div class="wing-index">R</div>
+        <div class="wing-title"><h3>The Rotunda</h3><span>Lower Courtyard</span></div>
+        <div class="wing-desc">A sunken circular court ringed in poured stone, drawing visitors down a half-level from the entrance plaza into a quiet, top-lit room before the main galleries begin.</div>
+      </div>
+      <div class="wing reveal">
+        <div class="wing-index">S</div>
+        <div class="wing-title"><h3>The Ribbon Galleries</h3><span>Exhibition Hall</span></div>
+        <div class="wing-desc">An unbroken curved wall traces an S through the southern block, opening into a sequence of double-height rooms hung with rotating exhibitions and a central sculpture court.</div>
+      </div>
+      <div class="wing reveal">
+        <div class="wing-index">F</div>
+        <div class="wing-title"><h3>The Forecourt</h3><span>Entry &amp; Pool</span></div>
+        <div class="wing-desc">A long lit fountain leads from the street to the museum doors, framed by clipped cypress and shallow basin jets — the building's formal handshake with the city.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gardens" id="gardens">
+    <div class="garden-wrap">
+      <div class="garden-copy reveal">
+        <div class="eyebrow">The Gardens</div>
+        <h2>Four parterres, one statue</h2>
+        <p class="lede">South of the galleries, clipped boxwood is cut into matching scroll patterns around a central bronze, echoing the museum's own curved walls in something that can be tended by hand.</p>
+        <ul class="parterre-list">
+          <li>Boxwood hedges trimmed into mirrored scrollwork, raked gravel infill</li>
+          <li>A central pedestal statue marking the cross-axis of the garden</li>
+          <li>Lantern-lit pathways guiding visitors toward the entrance pool</li>
+          <li>Cypress columns framing the final approach to the museum doors</li>
+        </ul>
+      </div>
+      <div class="knot reveal">
+        <svg viewBox="0 0 200 200">
+          <circle class="knot-ring" cx="100" cy="100" r="92"/>
+          <circle class="knot-ring" cx="100" cy="100" r="70"/>
+          <g class="knot-petal" style="animation-delay:.1s">
+            <path d="M100,30 C140,30 150,70 100,100 C50,70 60,30 100,30 Z"/>
+          </g>
+          <g class="knot-petal" style="animation-delay:.3s">
+            <path d="M170,100 C170,140 130,150 100,100 C130,50 170,60 170,100 Z"/>
+          </g>
+          <g class="knot-petal" style="animation-delay:.5s">
+            <path d="M100,170 C60,170 50,130 100,100 C150,130 140,170 100,170 Z"/>
+          </g>
+          <g class="knot-petal" style="animation-delay:.7s">
+            <path d="M30,100 C30,60 70,50 100,100 C70,150 30,140 30,100 Z"/>
+          </g>
+          <circle class="knot-center" cx="100" cy="100" r="5"/>
+        </svg>
+        <div class="knot-caption">Parterre Plan — South Garden</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="visit" id="visit">
+    <div class="section-head reveal">
+      <div class="eyebrow">Plan Your Visit</div>
+      <h2>Arrive, wander, stay</h2>
+      <p class="lede">The campus is designed to be entered slowly — by car along the tree-lined drive, or on foot through the gardens straight to the fountain court.</p>
+    </div>
+    <div class="visit-grid">
+      <div class="visit-card reveal">
+        <div class="vc-top">Hours</div>
+        <h3>Daily, 10–18</h3>
+        <p>Last entry one hour before close. The rotunda courtyard remains lit through the evening.</p>
+      </div>
+      <div class="visit-card reveal">
+        <div class="vc-top">Arrival</div>
+        <h3>By Drive or Foot</h3>
+        <p>38 marked bays along the tree-lined service road, with step-free access through the south garden.</p>
+      </div>
+      <div class="visit-card reveal">
+        <div class="vc-top">Grounds</div>
+        <h3>Open at Dusk</h3>
+        <p>Garden paths and the fountain forecourt stay lit and open to the public after the galleries close.</p>
+      </div>
+      <div class="visit-card reveal">
+        <div class="vc-top">Groups</div>
+        <h3>Guided Walks</h3>
+        <p>Small-group tours trace the full loop, from the studio terrace to the ribbon galleries and gardens.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="closing">
+    <h2 class="closing-title reveal">Come see how a museum can be drawn before it is built.</h2>
+    <div class="closing-row reveal">
+      <div class="closing-addr">The Design Museum<br>Civic Quarter, Plan No. 002<br>Open daily, gardens lit nightly</div>
+      <a class="cta-btn" href="#intro">Plan a visit ↑</a>
+    </div>
+    <div class="foot-meta">
+      <span>© The Design Museum</span>
+      <span>Site plan illustrated above</span>
+    </div>
+  </footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => io.observe(el));
+</script>
+</body>
+</html>
